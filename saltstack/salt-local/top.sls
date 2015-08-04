@@ -1,5 +1,5 @@
 base:
-  'dockertest':
+  'dev':
     - apache
     - mysql
     - docker
