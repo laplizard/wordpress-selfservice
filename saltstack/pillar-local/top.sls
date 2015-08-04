@@ -1,0 +1,3 @@
+base:
+  'dockertest':
+    - mysql.server

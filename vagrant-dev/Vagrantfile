@@ -1,0 +1,52 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.box = "ubuntu/trusty64"
+
+  config.vm.network "forwarded_port", guest: 80, host: 8080
+
+  # no salt pre-reqs?
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   sudo apt-get update
+  #   sudo apt-get install -y apache2
+  # SHELL
+
+  # Workaround https://github.com/mitchellh/vagrant/issues/5973
+  # config.vm.provision :shell, path: "salt/salt-install.sh", privileged: false
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get install -y git
+    [ -d /srv ] ||  mkdir /srv
+    cd /srv
+    [ -d wordpress-selfservice ] || git clone https://github.com/cgreenhalgh/wordpress-selfservice.git
+    [ -d formulas ] || mkdir /srv/formulas
+    cd /srv/formulas
+    [ -d apache-formula ] || git clone https://github.com/cgreenhalgh/apache-formula.git
+    [ -d nagios-formula ] || git clone https://github.com/cgreenhalgh/nagios-formula.git
+    [ -d mysql-formula ] || git clone https://github.com/cgreenhalgh/mysql-formula.git
+    [ -d docker-formula ] || git clone https://github.com/cgreenhalgh/docker-formula.git
+
+    # see http://docs.saltstack.com/en/latest/topics/installation/ubuntu.html
+    add-apt-repository ppa:saltstack/salt
+    apt-get update
+    apt-get install -y salt-minion
+    
+    # This will set the salt ID, which will determine what gets installed!! - here 'dockertest' :-)
+    cp /srv/wordpress-selfservice/saltstack/etc/minion-local-dev.conf /etc/salt/minion
+
+    service salt-minion restart
+    salt-call state.highstate
+
+  SHELL
+
+  #config.vm.provision :salt do |salt|
+  #  salt.install_master = false
+  #  salt.no_minion = false
+  #  salt.install_type = "stable"
+  #  # https://github.com/mitchellh/vagrant/issues/5973
+  #  salt.minion_config = "salt/minion-local.conf"
+  #  salt.run_highstate = true
+  #end
+
+end
