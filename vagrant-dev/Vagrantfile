@@ -26,7 +26,7 @@ Vagrant.configure(2) do |config|
     [ -d nagios-formula ] || git clone https://github.com/cgreenhalgh/nagios-formula.git
     [ -d mysql-formula ] || git clone https://github.com/cgreenhalgh/mysql-formula.git
     [ -d docker-formula ] || git clone https://github.com/cgreenhalgh/docker-formula.git
-
+    [ -d php-formula ] || git clone https://github.com/cgreenhalgh/php-formula.git
     # see http://docs.saltstack.com/en/latest/topics/installation/ubuntu.html
     add-apt-repository ppa:saltstack/salt
     apt-get update

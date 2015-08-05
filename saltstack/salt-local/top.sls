@@ -4,3 +4,5 @@ base:
     - mysql
     - docker
     - wordpress.docker
+    - php
+    #- selfservice.master
