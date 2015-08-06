@@ -1,5 +1,5 @@
 base:
-  'dockertest':
+  'dev':
     - mysql.server
     - selfservice.master
 

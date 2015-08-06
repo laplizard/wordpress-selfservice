@@ -5,4 +5,4 @@ base:
     - docker
     - wordpress.docker
     - php
-    #- selfservice.master
+    - selfservice.master
