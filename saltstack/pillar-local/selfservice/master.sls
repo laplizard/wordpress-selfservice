@@ -5,3 +5,4 @@ selfservice:
   admin_password: 'SPs8vm2p'
   # for local password generation
   seed: 'Qw2wpBFg'
+  email: chris.greenhalgh@nottingham.ac.uk
