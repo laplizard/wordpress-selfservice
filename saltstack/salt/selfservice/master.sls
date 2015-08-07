@@ -8,6 +8,7 @@ include:
  # from php-formula
  - php.mysql
  # may need to restart apache2 depending on installation order
+ - wordpress.wp-cli
 
 selfservice-db:
   mysql_database.present:
@@ -39,9 +40,9 @@ selfservice-dir:
 selfservice-download:
   cmd.run:
    - require:
-     - docker: cgreenhalgh/wp-cli
+     - file: /usr/local/bin/wp
      - file: {{ htmldir }}
-   - name: docker run --rm -v {{ htmldir }}:/var/www/html cgreenhalgh/wp-cli sudo -u www-data wp core download
+   - name: sudo -u www-data /usr/local/bin/wp --path={{ htmldir }} core download
    - unless: ls {{ htmldir }}/wp-includes/version.php
 
 selfservice-keys:
@@ -69,10 +70,10 @@ selfservice-config:
 selfservice-install:
   cmd.run:
    - require:
-      - docker: cgreenhalgh/wp-cli
+      - file: /usr/local/bin/wp
       - file: {{ htmldir }}/wp-config.php
-   - unless: docker run --rm -v {{ htmldir }}:/var/www/html cgreenhalgh/wp-cli sudo -u www-data wp core is-installed 
-   - name: docker run --rm -v {{ htmldir }}:/var/www/html cgreenhalgh/wp-cli sudo -u www-data wp core install --url=http://{{ servername }}/selfservice/ "--title=Self Service Console for {{ servername }}" --admin_user=admin --admin_password={{ wppassword }} --admin_email={{ email }}
+   - unless: sudo -u www-data /usr/local/bin/wp --path={{ htmldir }} core is-installed 
+   - name:  sudo -u www-data /usr/local/bin/wp --path={{ htmldir }} core install --url=http://{{ servername }}/selfservice/ "--title=Self Service Console for {{ servername }}" --admin_user=admin --admin_password={{ wppassword }} --admin_email={{ email }}
 
 # update description - blogdescription
 # require registration to comment - comment_registration
@@ -83,10 +84,10 @@ selfservice-install:
 
 selfservice-options-{{oname}}:
   cmd.run:
-   - unless: "[ \"`sudo docker run --rm -v {{ htmldir }}:/var/www/html cgreenhalgh/wp-cli sudo -u www-data wp option get {{oname}}`\" == \"{{ovalue}}\" ]"
+   - unless: "[ \"`sudo -u www-data /usr/local/bin/wp --path={{ htmldir }} option get {{oname}}`\" == \"{{ovalue}}\" ]"
    - require:
-      - cmd: selfservice-install
-   - name: sudo docker run --rm -v {{ htmldir }}:/var/www/html cgreenhalgh/wp-cli sudo -u www-data wp option set {{oname}} "{{ovalue}}"
+      - file: /usr/local/bin/wp
+   - name: sudo -u www-data /usr/local/bin/wp --path={{ htmldir }} option set {{oname}} "{{ovalue}}"
 
 
 {% endfor %}

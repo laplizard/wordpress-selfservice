@@ -15,7 +15,7 @@ php-for-wordpress:
    - makedirs: True
    - dir_mode: 755
 
-wp-cli:
+docker-wp-cli:
   docker.built:
    - name: cgreenhalgh/wp-cli
    - path: /var/docker/wp-cli
