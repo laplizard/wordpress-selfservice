@@ -7,4 +7,5 @@ base:
     - php
     - php.mysql
     - php-mysql-restart
+    - php-wordpress-dev
     - selfservice.master
