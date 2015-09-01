@@ -5,7 +5,7 @@ export WORDPRESS_VERSION=4.3
 # setup for running test-plugins.sh
 [ -d wordpress ] || mkdir wordpress
 cd wordpress
-composer create-project wp-coding-standards/wpcs:dev-master --no-dev --keep-vcs
+[ -d wpcs ] || composer create-project wp-coding-standards/wpcs:dev-master --no-dev --keep-vcs
 export PATH="$(pwd)/wpcs/vendor/bin":$PATH
 [ -f wp-cli.phar ] || curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
 chmod a+x wp-cli.phar
@@ -15,7 +15,7 @@ chmod a+x wp-cli.phar
 [ -f wordpress-${WORDPRESS_VERSION}.tar.gz ] || curl -O https://wordpress.org/wordpress-${WORDPRESS_VERSION}.tar.gz
 [ -d wordpress ] || tar -zxf wordpress-${WORDPRESS_VERSION}.tar.gz
 cd wordpress
-../wp-cli.phar core config --dbname=wordpress-dev --dbuser=wordpress-dev
+[ -f wp-config.php ] || ../wp-cli.phar core config --dbname=wordpress-dev --dbuser=wordpress-dev
 cd ..
-echo "<?php require_once '$(pwd)/wordpress/wp-config.php'; ?>" > tests/bootstrap.php
-echo "<?php require_once 'autoload.php'; ?>" >> tests/bootstrap.php
+echo "<?php require_once '$(pwd)/wordpress/wp-config.php'; ?>" > bootstrap.php
+echo "<?php require_once 'autoload.php'; ?>" >> bootstrap.php
