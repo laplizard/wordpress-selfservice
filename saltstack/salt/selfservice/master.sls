@@ -3,6 +3,8 @@
 {% set servername = salt['pillar.get']('selfservice:servername','localhost') %}
 {% set wppassword = salt['pillar.get']('selfservice:admin_password','admin') %}
 {% set email = salt['pillar.get']('selfservice:email','root@localhost') %}
+# interface could be docker0, except doesn't exist if docker not yet installed!
+{% set dbinterface = 'eth0' %}
 
 include: 
  # from php-formula
@@ -65,7 +67,7 @@ selfservice-config:
    - context: 
        instance: {{ instance }}
        dbpassword: {{ salt['selfservice.password'](instance,instance+'-db') }}
-       dbhost: {{ salt['network.interface_ip']('docker0') }} # docker bridge
+       dbhost: {{ salt['network.interface_ip'](dbinterface) }} # not localhost if from vm!
 
 selfservice-install:
   cmd.run:

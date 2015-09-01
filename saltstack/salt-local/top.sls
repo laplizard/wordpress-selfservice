@@ -2,7 +2,9 @@ base:
   'dev':
     - apache
     - mysql
-    - docker
-    - wordpress.docker
+    #- docker
+    #- wordpress.docker
     - php
+    - php.mysql
+    - php-mysql-restart
     - selfservice.master
