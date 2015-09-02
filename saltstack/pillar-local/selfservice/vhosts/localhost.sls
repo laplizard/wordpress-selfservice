@@ -7,5 +7,9 @@ apache:
 {% endif %}
   sites:
     127.0.0.1:
+      template_file: salt://selfservice/vhosts/standard.tmpl
       ServerName: 127.0.0.1
+      locations:
+        /selfservice:
+          DocumentRoot: /var/www/html/selfservice
 

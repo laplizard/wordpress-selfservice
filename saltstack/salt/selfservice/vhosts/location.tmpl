@@ -1,0 +1,13 @@
+{% set vals = {
+    'location': location.get('Location',id),
+    'directory': location.get('DocumentRoot')
+} %}
+ 
+    <Location "{{ vals.location }}">
+    </Location>
+    {% if location.get('DocumentRoot') != False %}
+    Alias "{{ vals.location }}" "{{ vals.directory }}"
+    <Directory "{{ vals.directory }}">
+        Require all granted    
+    </Directory>
+    {% endif %}

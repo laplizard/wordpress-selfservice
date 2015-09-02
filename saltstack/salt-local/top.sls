@@ -8,5 +8,5 @@ base:
     - php.mysql
     - php-mysql-restart
     - php-wordpress-dev
-    - apache.vhosts.standard
+    - selfservice.vhosts.standard
     - selfservice.master
