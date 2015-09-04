@@ -38,3 +38,8 @@ selfservice: [todo]
 
 TODO: minion selection/filtering!
 
+Pillar data is exported from selfservice server with:
+```
+sudo -u www-data /srv/wordpress-selfservice/scripts/wpss_get_pillar.php --path=/var/www/html/selfservice
+```
+

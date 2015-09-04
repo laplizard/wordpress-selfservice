@@ -42,7 +42,7 @@ define('DB_COLLATE', '');
  *
  * @since 2.6.0
  */
-require_once(ABSPATH . 'wp-keys.php');
+require_once( __DIR__ . '/wp-keys.php');
 
 /**#@-*/
 
