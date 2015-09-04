@@ -17,6 +17,15 @@ php-wp-coding-standards:
    - requires:
       - cmd: php-wp-coding-standards
 
+# phpunit from https://phar.phpunit.de/ - for SHA1 hash
+/usr/local/bin/phpunit:
+  file.managed:
+   - source: https://phar.phpunit.de/phpunit-4.8.6.phar
+   - source_hash: sha1=e07700281a2d2188de04775c537b6a1ee0f13456
+   - user: root
+   - group: root
+   - mode: 555
+
 # dev database
 wordpress-dev db:
   mysql_database.present:
