@@ -39,6 +39,36 @@ selfservice-dir:
    - group: www-data
    - mode: 755
 
+# selfservice plugin, release 0.1
+selfservice-plugin-cache:
+  file.managed:
+   - name: /srv/cache/plugins/wpss-0.1.tar.gz
+   - source: https://github.com/cgreenhalgh/wordpress-selfservice/archive/0.1.tar.gz
+   - source_hash: sha1=bfb6987205a9bcbdee5519c2e2100a02dff65c06
+   - makedirs: True
+   - user: root
+   - group: root
+   - mode: 644
+   - dir_mode: 755
+
+selfservice-plugin-install:
+  cmd.run:
+   - require: 
+      - file: selfservice-plugin-cache
+      - cmd: selfservice-install
+   - user: www-data
+   - group: www-data
+   - name: tar zxf /srv/cache/plugins/wpss-0.1.tar.gz --strip-components=2 wordpress-selfservice-0.1/plugins
+   - cwd: {{ htmldir }}/wp-content/plugins
+   # - unless: ???
+
+selfservice-plugin-activate:
+  cmd.run:
+   - require: 
+      - cmd: selfservice-plugin-install
+   - name:  sudo -u www-data /usr/local/bin/wp --path={{ htmldir }} plugin activate selfservice
+   # - unless: ???
+
 selfservice-download:
   cmd.run:
    - require:
