@@ -15,3 +15,10 @@ def password(user,context=''):
     m.update( user )
     return base64.b64encode( m.digest() )
 
+def safetext(text):
+    '''
+    filter text to be safe in shell argument, e.g. wp title.
+    '''
+    keepcharacters = (' ','.','_',',','-', ':', '/', '=', '@')
+    return "".join(c for c in text if c.isalnum() or c in keepcharacters).rstrip()
+
