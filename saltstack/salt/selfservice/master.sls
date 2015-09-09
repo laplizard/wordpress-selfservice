@@ -51,9 +51,9 @@ selfservice-dir:
 # selfservice plugin, release 0.1
 selfservice-plugin-cache:
   file.managed:
-   - name: /srv/cache/plugins/wpss-0.1.tar.gz
-   - source: https://github.com/cgreenhalgh/wordpress-selfservice/archive/0.1.tar.gz
-   - source_hash: sha1=bfb6987205a9bcbdee5519c2e2100a02dff65c06
+   - name: /srv/cache/plugins/wpss-0.2.tar.gz
+   - source: https://github.com/cgreenhalgh/wordpress-selfservice/archive/0.2.tar.gz
+   - source_hash: sha1=8526cf1524696163f583b832924215af3c46fa5e
    - makedirs: True
    - user: root
    - group: root
@@ -67,7 +67,7 @@ selfservice-plugin-install:
       - cmd: selfservice-install
    - user: www-data
    - group: www-data
-   - name: tar zxf /srv/cache/plugins/wpss-0.1.tar.gz --strip-components=2 wordpress-selfservice-0.1/plugins
+   - name: tar zxf /srv/cache/plugins/wpss-0.2.tar.gz --strip-components=2 wordpress-selfservice-0.2/plugins
    - cwd: {{ htmldir }}/wp-content/plugins
    # - unless: ???
 
