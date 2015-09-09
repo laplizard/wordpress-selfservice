@@ -105,7 +105,7 @@ selfservice-install-{{ instance }}:
       #- file: /usr/local/bin/wp
       - file: {{ htmldir }}/wp-config.php
    - unless: sudo -u www-data /usr/local/bin/wp --path={{ htmldir }} core is-installed 
-   - name:  sudo -u www-data /usr/local/bin/wp --path={{ htmldir }} core install --url={{ salt['selfservice.safetext'](url) }} "--title={{ salt['selfservice.safetext'](title) }}" --admin_user=admin --admin_password={{ admin_password_hash }} --admin_email={{ salt['selfservice.safetext'](admin_email) }}
+   - name:  sudo -u www-data /usr/local/bin/wp --path={{ htmldir }} core install --url={{ salt['selfservice.safetext'](url) }} "--title={{ salt['selfservice.safetext'](title) }}" --admin_user=admin --admin_email={{ salt['selfservice.safetext'](admin_email) }} --admin_password={{  salt['selfservice.password'](instance,instance+'-wp') }}
 
 # update description - blogdescription
 # require registration to comment - comment_registration
