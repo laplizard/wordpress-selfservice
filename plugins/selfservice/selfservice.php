@@ -44,3 +44,63 @@ function wpss_create_post_types() {
 	);
 }
 
+/**
+ * Handle site post delete (from trash - meta should still exist)
+ * @param int $postid Post id.
+ */
+function wpss_on_before_delete_post( $postid ) {
+	$post = get_post( $post_id );
+	if ( 'wpss_site' != $post->post_type ) {
+		return;
+	}
+	// TODO: event?
+}
+add_action( 'before_delete_post', 'wpss_on_before_delete_post' );
+
+/**
+ * Handle site post delete (any cause - meta gone)
+ * @param int $postid Post id.
+ */
+function wpss_on_delete_post( $postid ) {
+	$post = get_post( $postid );
+	if ( null == $post ) {
+		return;
+	}
+	if ( 'wpss_site' != $post->post_type ) {
+		return;
+	}
+	$data = array(
+		'instance' => $postid,
+		'status' => 'deleted',
+	);
+	wpss_send_event( $data );
+}
+add_action( 'delete_post', 'wpss_on_delete_post' );
+
+/**
+ * Handle site post add or update
+ * @param int $postid Post id.
+ */
+function wpss_on_save_post( $postid ) {
+	// Note: post_type asserted through specific action.
+	$post = get_post( $postid );
+	$data = array(
+		'instance' => $postid,
+		'status' => $post->post_status,
+		'type' => 'wordpress',
+	);
+	wpss_send_event( $data );
+}
+/**
+ * Send event to salt master.
+ * @param Array $data Event data.
+ */
+function wpss_send_event( $data ) {
+	$output = array();
+	$res = 0;
+	exec( 'sudo /usr/bin/salt-call event.send selfservice/www \''.json_encode( $data, JSON_HEX_APOS ).'\'', $output, $res );
+	if ( 0 != $res ) {
+		error_log( 'selfservice event.send failed (exit code '.$res.'): '.$output );
+	}
+}
+add_action( 'save_post_wpss_site', 'wpss_on_save_post' );
