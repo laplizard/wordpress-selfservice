@@ -5,6 +5,10 @@ Vagrant.configure(2) do |config|
 
   config.vm.box = "ubuntu/trusty64"
 
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 1024
+  end
+
   config.vm.network "forwarded_port", guest: 80, host: 8080
 
   # no salt pre-reqs?
@@ -16,6 +20,7 @@ Vagrant.configure(2) do |config|
   # Workaround https://github.com/mitchellh/vagrant/issues/5973
   # config.vm.provision :shell, path: "salt/salt-install.sh", privileged: false
   config.vm.provision "shell", inline: <<-SHELL
+    # master formulas, pillars and states
     apt-get install -y git
     [ -d /srv ] ||  mkdir /srv
     cd /srv
@@ -30,10 +35,25 @@ Vagrant.configure(2) do |config|
     # see http://docs.saltstack.com/en/latest/topics/installation/ubuntu.html
     add-apt-repository ppa:saltstack/salt
     apt-get update
+
+    # master
+    apt-get install -y salt-master
+    cp /srv/wordpress-selfservice/saltstack/etc/master.conf /etc/salt/master
+    
+    service salt-master restart
+
     apt-get install -y salt-minion
     
     # This will set the salt ID, which will determine what gets installed!! - here 'dockertest' :-)
-    cp /srv/wordpress-selfservice/saltstack/etc/minion-local-dev.conf /etc/salt/minion
+    cp /srv/wordpress-selfservice/saltstack/etc/minion-dev.conf /etc/salt/minion
+
+
+    # install key
+    (cd /tmp; salt-key --gen-keys=dev)
+    cp /tmp/dev.pub /etc/salt/pki/minion/minion.pub
+    cp /tmp/dev.pem /etc/salt/pki/minion/minion.pem
+    # to master
+    cp /tmp/dev.pub /etc/salt/pki/master/minions/dev
 
     service salt-minion restart
     salt-call state.highstate
