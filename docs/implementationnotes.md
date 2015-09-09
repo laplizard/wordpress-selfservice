@@ -16,8 +16,9 @@ apache:
     127.0.0.1:
       locations:
         /WEBPATH:
+          id: ID
           DocumentRoot: DIRECTORY
-          available: True [todo]
+          available: true
           defaultMessage: ... [todo]
 ```
 Another part specifies WordPress initialisation. Pillar `selfservice:sites:`.
@@ -33,7 +34,7 @@ selfservice: [todo]
       admin_password_hash: PASSWORDHASH
       title: TITLE
       description: DESCRIPTION
-      
+      status: publish|trash|auto-draft|...      
 ```
 
 TODO: minion selection/filtering!

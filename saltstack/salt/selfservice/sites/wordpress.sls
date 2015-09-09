@@ -1,6 +1,9 @@
 
 {% for htmldir,site in salt['pillar.get']('selfservice:sites', {}).items() %}
 {% if site.get('type','') == 'wordpress' %}
+{% if site.get('status','publish') != 'publish' %}
+{# not published... ?? #}
+{% else %}
 
 {% set instance = site.get('id',htmldir) %}
 {% set admin_password_hash = site.get('admin_password_hash','') %}
@@ -152,6 +155,7 @@ selfservice-admin-{{ instance }}:
       - cmd: selfservice-install-{{ instance }}
    #- unless: ??
 
-{% endif %}
+{% endif %}{# published #}
+{% endif %}{# wordpress #}
 {% endfor %}
 

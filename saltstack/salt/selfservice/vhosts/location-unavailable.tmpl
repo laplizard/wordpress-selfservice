@@ -1,0 +1,11 @@
+{% set vals = {
+    'location': location.get('Location',id),
+    'directory': location.get('DocumentRoot')
+} %}
+ 
+# location no availble: "{{ vals.location }}"
+    {% if location.get('DocumentRoot') != False %}
+    <Directory "{{ vals.directory }}">
+        Require all granted    
+    </Directory>
+    {% endif %}

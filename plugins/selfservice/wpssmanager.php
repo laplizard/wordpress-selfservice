@@ -113,6 +113,7 @@ class WPSSManager
 					'DocumentRoot' => $directory,
 					'available' => $available,
 					'defaultMessage' => $defaultMessage,
+					'id' => $id,
 					);
 					if ( ! array_key_exists( $servername, $apachesites ) ) {
 						$apachesites[ $servername ] = array(
@@ -127,6 +128,7 @@ class WPSSManager
 					'title' => $post->post_title,
 					'description' => $post->post_content,
 					'url' => $url,
+					'status' => $post->post_status,
 					);
 				}
 				$pillar = array(

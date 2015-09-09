@@ -9,17 +9,22 @@ include:
 {% for id, site in salt['pillar.get']('apache:sites', {}).items() %}
 {% set documentroot = site.get('DocumentRoot', '{0}/{1}'.format(apache.wwwdir, id)) %}
 
-{% for locid, location in site.get('locations',{}).items() %}
-{% set safelocid = locid.replace("/","-") %}
+{% for path, location in site.get('locations',{}).items() %}
+{% set safepath = path.replace("/","-") %}
+{% set locid = location.get('id', safepath) %}
 
 {{ id }}-{{ locid }}:
   file:
     - managed
-    - name: {{ apache.vhostdir }}/{{ id }}-{{ safelocid }}.location
+    - name: {{ apache.vhostdir }}/{{ id }}-{{ locid }}.location
+{% if location.get('available',true) %}
     - source: {{ location.get('template_file', 'salt://selfservice/vhosts/location.tmpl') }}
+{% else %}
+    - source: salt://selfservice/vhosts/location-unavailable.tmpl
+{% endif %}
     - template: {{ location.get('template_engine', 'jinja') }}
     - context:
-        id: {{ locid|json }}
+        id: {{ path|json }}
         location: {{ location|json }}
         map: {{ apache|json }}
     - require:
