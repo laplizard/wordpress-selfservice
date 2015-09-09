@@ -1,3 +1,17 @@
+# wordpress
+{% set wpversion = '4.3' %}
+{% set wphash = 'sha1=1e9046b584d4eaebac9e1f7292ca7003bfc8ffd7' %}
+
+selfservice-cache-wp{{ wpversion }}:
+  file.managed:
+   - name: /srv/cache/wordpress-{{ wpversion }}.tar.gz
+   - source: https://wordpress.org/wordpress-{{ wpversion }}.tar.gz
+   - source_hash: {{ wphash }}
+   - makedirs: True
+   - user: root
+   - group: root
+   - mode: 644
+   - dir_mode: 755
 
 {% for htmldir,site in salt['pillar.get']('selfservice:sites', {}).items() %}
 {% if site.get('type','') == 'wordpress' %}
@@ -75,9 +89,13 @@ selfservice-dir-{{ instance }}:
 selfservice-download-{{ instance }}:
   cmd.run:
    - require:
+     - file: /srv/cache/wordpress-{{ wpversion }}.tar.gz
      #- file: /usr/local/bin/wp
      - file: {{ htmldir }}
-   - name: sudo -u www-data /usr/local/bin/wp --path={{ htmldir }} core download
+   - name: tar zxf /srv/cache/wordpress-{{ wpversion }}.tar.gz --strip-components=1 wordpress
+   - user: www-data
+   - group: www-data
+   - cwd: {{ htmldir }}
    - unless: ls {{ htmldir }}/wp-includes/version.php
 
 selfservice-keys-{{ instance }}:
