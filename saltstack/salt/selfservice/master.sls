@@ -12,6 +12,15 @@ include:
  # may need to restart apache2 depending on installation order
  - wordpress.wp-cli
 
+# allow selfservice to sudo salt-call event.send
+selfservice-sudoers:
+  file.managed:
+   - name: /etc/sudoers.d/selfservice
+   - source: salt://selfservice/files/sudoers
+   - user: root
+   - group: root
+   - mode: 440
+
 selfservice-db:
   mysql_database.present:
    - name: {{ instance }}

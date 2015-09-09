@@ -1,0 +1,4 @@
+# allow apache to use salt-call to send event(s) to salt master.
+# note: tag must start with selfservice/www (security)
+www-data ALL=(root) NOPASSWD: /usr/bin/salt-call event.send selfservice/www*
+

@@ -43,3 +43,9 @@ Pillar data is exported from selfservice server with:
 sudo -u www-data /srv/wordpress-selfservice/scripts/wpss_get_pillar.php --path=/var/www/html/selfservice
 ```
 
+Apache (www-data) can send event back to salt (permission in sudoers) with:
+```
+sudo /usr/bin/salt-call event.send selfservice/www param=value...
+```
+
+
