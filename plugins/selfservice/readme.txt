@@ -29,7 +29,7 @@ Work in Progress at the University of Nottingham, Mixed Reality Lab (in Computer
 
 = Does it work? =
 
-Not yet.
+A little.
 
 == Screenshots ==
 

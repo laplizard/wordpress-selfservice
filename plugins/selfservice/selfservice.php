@@ -2,7 +2,7 @@
 /**
 Plugin Name: WordPress SelfService
 Description: Links to a suitably configured SaltStack installation to allow users to create and manage their own dedicated WordPress instances.
-Version:     0.1
+Version:     0.2
 Author:      Chris Greenhalgh
 Author URI:  http://www.cs.nott.ac.uk/~cmg
 License:     AGPLv3 or later
