@@ -16,8 +16,9 @@ Copyright (c) 2015, The University of Nottingham
 
 defined( 'ABSPATH' ) or die( 'This is a plugin' );
 
-
-
+// Steve add:
+//include_once('/includes/taxonomy-single-term/class.taxonomy-single-term.php');
+require_once plugin_dir_path( __FILE__ ) . '/includes/taxonomy-single-term/class.taxonomy-single-term.php';
 
 add_action( 'init', 'wpss_create_post_types' );
 /**
@@ -165,6 +166,7 @@ function add__website_templates_taxonomy() {
 
 global $pathToTemplates, $fileExtensionForTemplates;
 
+
 	register_taxonomy('website_templates', 'wpss_site', array(
 		// Hierarchical taxonomy (like categories)
 		'hierarchical' => true,
@@ -191,6 +193,13 @@ global $pathToTemplates, $fileExtensionForTemplates;
 		),
 	));
 
+
+// convert to meta box to radio buttons
+$custom_tax_mb = new Taxonomy_Single_Term( 'website_templates', array( 'wpss_site' ));
+// Makes a selection required.
+$custom_tax_mb->set( 'force_selection', true );
+
+	
 // if term 'vanilla' doesn't already exist in website_templates taxonomy... add it (then, it doesn't matter if found in templates dir or not)
 $term = term_exists('vanilla', 'website_templates');
 if ($term == 0 || $term == null) {
@@ -215,7 +224,10 @@ wp_insert_term($path_parts['filename'],  'website_templates');
  } // close if term doesn't exist.
 
  }	// close all filenames in templates dir
-}
+
+ 
+ 
+ }
 
 add_action( 'init', 'add__website_templates_taxonomy', 0 );
 
