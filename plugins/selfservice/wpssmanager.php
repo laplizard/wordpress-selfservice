@@ -71,6 +71,9 @@ class WPSSManager
 	 * @return pillar data structure
 	 */
 	function get_pillar( $minion_id ) {
+	
+	debug_halt("here!");
+	
 		$qargs = array(
 			'post_type' => 'wpss_site',
 			'post_status' => 'any',
@@ -104,7 +107,7 @@ class WPSSManager
 			$author = get_userdata( $post->post_author );
 			if ( false === $author ) {
 				if ( $available ) {
-					$defaultMessage = 'Site note available (could not find author '.$post->post_author.')';
+					$defaultMessage = 'Site not available (could not find author '.$post->post_author.')';
 				}
 				$available = false;
 			}
@@ -127,6 +130,8 @@ class WPSSManager
 				'description' => $post->post_content,
 				'url' => $url,
 				'status' => $post->post_status,
+				
+				'template' => wpss_get_selected_template_for_website($id),
 			);
 		}
 		$pillar = array(
@@ -139,4 +144,61 @@ class WPSSManager
 		);
 		return $pillar;
 	}
+}
+
+
+
+
+function wpss_get_selected_template_for_website($postID) {
+
+debug_halt ("getting selected template for posts with type wpss_site" );
+
+//  get the term (template) associated with this website
+$terms = get_the_terms( $postID, 'website_templates' );
+
+// 'if no terms assigned to this website, add add term 'vanilla' for this website
+if ( !$terms)
+{
+//debug_halt("no terms");
+
+// need the id for the term 'vanilla' by name
+$templateTerm = get_term_by('name', 'vanilla', 'website_templates');
+
+// add 'vanilla' template to this website
+wp_set_post_terms( $postID, $templateTerm->term_id, 'website_templates');
+
+// get the terms again, now we've added 'vanilla'
+$terms = get_the_terms( $postID, 'website_templates' );
+
+}
+				
+// check again for terms - should be 'vanilla' if not set in WP				
+if ( $terms && ! is_wp_error( $terms ) ) 
+{
+
+	$selected_template_names = array();
+
+	// should only be one term...but...
+	foreach ( $terms as $term ) {
+		$selected_template_names[] = $term->name;
+	}
+}
+
+debug_halt($selected_template_names[0]);
+
+// In case something has gone awry...
+if(!$selected_template_names[0]) { $selected_template_names[0]='error'; }	
+
+return $selected_template_names[0];	
+
+}
+
+
+
+function debug_halt ($data)
+{
+echo '<pre>';
+print($data);
+echo '</pre>';
+exit;
 }
