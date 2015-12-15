@@ -108,6 +108,7 @@ function wpss_on_save_post( $postid ) {
  * @param Array $data Event data.
  */
 function wpss_send_event( $data ) {
+
 	$output = array();
 	$res = 0;
 	exec( 'sudo /usr/bin/salt-call event.send selfservice/www \''.json_encode( $data, JSON_HEX_APOS ).'\'', $output, $res );
