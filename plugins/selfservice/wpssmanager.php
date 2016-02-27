@@ -72,7 +72,7 @@ class WPSSManager
 	 */
 	function get_pillar( $minion_id ) {
 	
-	debug_halt("here!");
+	//debug_halt("here!");
 	
 		$qargs = array(
 			'post_type' => 'wpss_site',
@@ -151,7 +151,7 @@ class WPSSManager
 
 function wpss_get_selected_template_for_website($postID) {
 
-debug_halt ("getting selected template for posts with type wpss_site" );
+//debug_halt ("getting selected template for posts with type wpss_site" );
 
 //  get the term (template) associated with this website
 $terms = get_the_terms( $postID, 'website_templates' );
@@ -184,7 +184,7 @@ if ( $terms && ! is_wp_error( $terms ) )
 	}
 }
 
-debug_halt($selected_template_names[0]);
+//debug_halt($selected_template_names[0]);
 
 // In case something has gone awry...
 if(!$selected_template_names[0]) { $selected_template_names[0]='error'; }	
