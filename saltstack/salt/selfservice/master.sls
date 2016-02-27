@@ -55,6 +55,7 @@ selfservice-plugin-cache:
   # - source: https://github.com/cgreenhalgh/wordpress-selfservice/archive/0.2.tar.gz
    - name: /srv/cache/plugins/wpss-master.tar.gz
    - source: https://github.com/laplizard/wordpress-selfservice/archive/master.tar.gz
+   - source_hash: sha1=6732EC85AF3EDCCAF12D11DB97565FD2C5595A4F
 #   - source_hash: sha1=8526cf1524696163f583b832924215af3c46fa5e
    - makedirs: True
    - user: root
