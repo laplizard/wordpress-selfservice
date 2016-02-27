@@ -48,36 +48,23 @@ selfservice-dir:
    - group: www-data
    - mode: 755
 
-# selfservice plugin, release 0.1
-selfservice-plugin-cache:
-  file.managed:
-   - name: /srv/cache/plugins/wpss-0.2.tar.gz
-   - source: https://github.com/cgreenhalgh/wordpress-selfservice/archive/0.2.tar.gz
-   - source_hash: sha1=8526cf1524696163f583b832924215af3c46fa5e
-   - makedirs: True
-   - user: root
-   - group: root
-   - mode: 644
-   - dir_mode: 755
-
-selfservice-plugin-install:
+selfservice-plugin-copy:
   cmd.run:
    - require: 
-      - file: selfservice-plugin-cache
       - cmd: selfservice-install
-   - user: www-data
-   - group: www-data
-   - name: tar zxf /srv/cache/plugins/wpss-0.2.tar.gz --strip-components=2 wordpress-selfservice-0.2/plugins
-   - cwd: {{ htmldir }}/wp-content/plugins
-   # - unless: ???
-
+   - name: sudo cp -R /srv/wordpress-selfservice/plugins/selfservice {{ htmldir }}/wp-content/plugins
+ #  - unless: ls {{ htmldir }}/wp-content/plugins/selfservice
+ 
+   # Steve: following uses WP-CLI to activate plugin
 selfservice-plugin-activate:
   cmd.run:
    - require: 
-      - cmd: selfservice-plugin-install
+      - cmd: selfservice-plugin-copy
    - name:  sudo -u www-data /usr/local/bin/wp --path={{ htmldir }} plugin activate selfservice
    # - unless: ???
 
+   
+   # Steve: 'wp core download' = WP-CLI for get latest version of WP
 selfservice-download:
   cmd.run:
    - require:
@@ -108,6 +95,7 @@ selfservice-config:
        dbpassword: {{ salt['selfservice.password'](instance,instance+'-db') }}
        dbhost: {{ salt['network.interface_ip'](dbinterface) }} # not localhost if from vm!
 
+# Steve: if WP is not installed, then install
 selfservice-install:
   cmd.run:
    - require:
