@@ -48,13 +48,13 @@ selfservice-dir:
    - group: www-data
    - mode: 755
 
- 
 selfservice-plugin-copy:
   cmd.run:
+   - require: 
+      - cmd: selfservice-install
    - name: sudo cp -R /srv/wordpress-selfservice/plugins/selfservice {{ htmldir }}/wp-content/plugins
  #  - unless: ls {{ htmldir }}/wp-content/plugins/selfservice
  
-
    # Steve: following uses WP-CLI to activate plugin
 selfservice-plugin-activate:
   cmd.run:
