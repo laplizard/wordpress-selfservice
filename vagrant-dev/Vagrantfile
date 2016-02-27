@@ -30,7 +30,7 @@ Vagrant.configure(2) do |config|
     cd /srv
    # [ -d wordpress-selfservice ] || git clone https://github.com/cgreenhalgh/wordpress-selfservice.git
    # [ -d wordpress-selfservice ] || git clone https://github.com/laplizard/wordpress-selfservice.git
-	git clone https://github.com/laplizard/wordpress-selfservice.git
+	 git clone https://github.com/laplizard/wordpress-selfservice.git
 	# echo "here"
     [ -d formulas ] || mkdir /srv/formulas
     cd /srv/formulas
