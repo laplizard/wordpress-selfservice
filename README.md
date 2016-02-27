@@ -12,19 +12,20 @@ Work in progress...
 
 Chris Greenhalgh, The University of Nottingham, 2015
 
+################################################################
 
 Steve North, The University of Nottingham, 2016:
 
 Working towards being able to select a template from the user interface and each template will determine which plugin, or combination of plugins is installed in the current WordPress instance. 
 
-First, there are two ways in which WP gets installed:
+Firstly , in WPSS there are two ways in which WP gets installed:
   
-WP Admin (including WPSS plugin) is installed by the state file: 
+1. WP Admin (including WPSS plugin) is installed by the state file: 
 /srv/wordpress-selfservice/saltstack/salt/selfservice/master.sls
 
-WP instances for individuals (including a selection of plugins controlled by state file templates) are installed by the state file: /srv/wordpress-selfservice/saltstack/salt/selfservice/sites/wordpress.sls
+2. WP instances for individuals (including a selection of plugins controlled by state file templates) are installed by the state file: /srv/wordpress-selfservice/saltstack/salt/selfservice/sites/wordpress.sls
  
-Clicking publish, update or trash on the WP admin installation, websites post type page updates the taxonomy status for the created post. This indicates which template radio-button has been selected (if not selected, then this is set to the 'vanilla' template, with no plugins).
+Clicking 'Publish', 'Update' or 'Move to trash'. on the WP admin installation, websites post type page (should!) update the taxonomy status for the created post. This indicates which template radio-button has been selected (if not selected, then this is set to the 'vanilla' template, with no plugins installed).
 
 The plugin fires off an (empty event) that is interpreted by a Salt Reactor script, causing the wordpress.sls to handle this as required.
 
@@ -57,8 +58,10 @@ include:
   
 Salt state templates are in: /srv/wordpress-selfservice/saltstack/salt/selfservice/sites/templates
 For example:
-
-
+artcode.sls (just artcode plugin)
+buddypress.sls (just buddypress plugin)
+buddypress_artcode.sls (artcode and buddypress plugin)
+etc...
 
 Plugins are in: /srv/wordpress-selfservice/plugins
 
