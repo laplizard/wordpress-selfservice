@@ -25,6 +25,10 @@ selfservice-cache-wp{{ wpversion }}:
 {% set title = site.get('title','Unnamed WPSS site') %}
 {% set description = site.get('description', 'Undescribed WPSS site' ) %}
 {% set url = site.get('url', '') %}
+
+# Steve: next line would be to get template name... for choosing which state template to include - below.
+#{% set template_name = site.get('template','') %}
+
 # interface could be docker0, except doesn't exist if docker not yet installed!
 {% set dbinterface = 'eth0' %}
 
@@ -58,37 +62,16 @@ selfservice-dir-{{ instance }}:
 
 
 # **************** Steve start
-   
-# selfservice plugin, release 0.2
-# selfservice-plugin-cache-{{ instance }}:
-#  file.managed:
-#   - name: /srv/cache/plugins/wpss-0.2.tar.gz
-#   - source: https://github.com/cgreenhalgh/wordpress-selfservice/archive/0.2.tar.gz
-#   - source_hash: sha1=8526cf1524696163f583b832924215af3c46fa5e
-#   - makedirs: True
-#   - user: root
-#   - group: root
-#   - mode: 644
-#   - dir_mode: 755
 
-# selfservice-plugin-install-{{ instance }}:
-#  cmd.run:
-#   - require: 
-#      - file: selfservice-plugin-cache-{{ instance }}
-#      - cmd: selfservice-install
-#   - user: www-data
-#   - group: www-data
-#   - name: tar zxf /srv/cache/plugins/wpss-0.2.tar.gz --strip-components=2 wordpress-selfservice-0.2/plugins
-#   - cwd: {{ htmldir }}/wp-content/plugins
-   # - unless: ???
+# Or for for testing purposes, before passing template via pillar is working:
+{% set template_name = 'artcode' %}
+#{% set template_name = 'buddypress' %}
+#{% set template_name = 'buddypress_artcode' %}
 
-   # Steve: following uses WP-CLI to activate plugin
-# selfservice-plugin-activate-{{ instance }}:
-#  cmd.run:
-#   - require: 
-#      - cmd: selfservice-plugin-install-{{ instance }}
-#   - name:  sudo -u www-data /usr/local/bin/wp --path={{ htmldir }} plugin activate selfservice
-   # - unless: ???
+# Now, include the salt state template for the template name...
+template-include-{{ instance }}:
+include:
+  - {{ template_name }} #without .sls extension
 
 # **************** Steve end
 
