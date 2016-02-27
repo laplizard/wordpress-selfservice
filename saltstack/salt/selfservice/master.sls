@@ -70,7 +70,7 @@ selfservice-plugin-install:
    - user: www-data
    - group: www-data
    # - name: tar zxf /srv/cache/plugins/wpss-0.2.tar.gz --strip-components=2 wordpress-selfservice-0.2/plugins
-   - name: tar zxf /srv/cache/plugins/wpss-master.tar.gz --strip-components=2 wordpress-selfservice-master/wordpress-selfservice-master/plugins
+   - name: tar zxf /srv/cache/plugins/wpss-master.tar.gz --strip-components=3 wordpress-selfservice-master/wordpress-selfservice-master/plugins
    - cwd: {{ htmldir }}/wp-content/plugins
    # - unless: ???
 
