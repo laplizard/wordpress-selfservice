@@ -113,7 +113,7 @@ selfservice-config:
        dbpassword: {{ salt['selfservice.password'](instance,instance+'-db') }}
        dbhost: {{ salt['network.interface_ip'](dbinterface) }} # not localhost if from vm!
 
-	   # Steve: if WP is not installed, then install
+# Steve: if WP is not installed, then install
 selfservice-install:
   cmd.run:
    - require:
