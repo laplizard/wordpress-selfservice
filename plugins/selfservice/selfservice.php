@@ -167,6 +167,8 @@ if ($term == 0 || $term == null) {
 wp_insert_term('vanilla',  'website_templates');
 }
 
+// Steve: next is where we need to change it to get template names from Salt files in templates dir
+
  foreach($template_names as $template_name){
  
  // check if template filename already exists as a term in website_templates taxonomy
@@ -182,6 +184,9 @@ wp_insert_term( $template_name,  'website_templates');
   
  } // close all template names
 
+ 
+ 
+ 
  }
  
 add_action( 'init', 'add__website_templates_taxonomy', 0 );

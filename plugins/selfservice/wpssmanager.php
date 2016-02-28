@@ -32,10 +32,16 @@ class WPSSManager
 		while ( $query->have_posts() ) {
 			$post = $query->next_post();
 			$id = strval( $post->ID );
+		
+			$template = wpss_get_selected_template_for_new_website($post->ID);
+			//debug_halt($template);
+			error_log($template);
+			
 			$website = array(
 				'id' => $id,
 				'status' => $post->post_status,
 				'title' => $post->post_title,
+				'template' => $template,
 				'description' => $post->post_content,
 				'modified' => $post->post_modified_gmt,
 				'created' => $post->post_date_gmt,
@@ -188,6 +194,54 @@ if ( $terms && ! is_wp_error( $terms ) )
 
 // In case something has gone awry...
 if(!$selected_template_names[0]) { $selected_template_names[0]='error'; }	
+
+return $selected_template_names[0];	
+
+}
+
+
+
+
+
+function wpss_get_selected_template_for_new_website($postID) {
+
+//  get the term (template) associated with this website
+$terms = get_the_terms( $postID, 'website_templates' );
+
+// 'if no terms assigned to this website, add add term 'vanilla' for this website
+if ( !$terms)
+{
+//debug_halt("no terms");
+
+// need the id for the term 'vanilla' by name
+$templateTerm = get_term_by('name', 'vanilla', 'website_templates');
+
+// add 'vanilla' template to this website
+wp_set_post_terms( $postID, $templateTerm->term_id, 'website_templates');
+
+// get the terms again, now we've added 'vanilla'
+$terms = get_the_terms( $postID, 'website_templates' );
+
+}
+				
+// check again for terms - should be 'vanilla' if not set in WP				
+if ( $terms && ! is_wp_error( $terms ) ) 
+{
+
+	$selected_template_names = array();
+
+	// should only be one term...but...
+	foreach ( $terms as $term ) {
+		$selected_template_names[] = $term->name;
+	}
+}
+
+//debug_halt($selected_template_names[0]);
+
+// In case something has gone awry...
+if(!$selected_template_names[0]) { $selected_template_names[0]='error'; }	
+
+//debug_halt("It's now: ".$selected_template_names[0]);
 
 return $selected_template_names[0];	
 

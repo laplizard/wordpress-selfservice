@@ -45,7 +45,7 @@ In wordpress.sls it will looks a bit like this:
 {% endif %}{# wordpress #}
 {% endfor %}
 
-Or for testing purposes, before passing template via pillar is working:
+Or for testing purposes, before passing template name via pillar is working:
 {% set template_name = 'artcode' %}
 #{% set template_name = 'buddypress' %}
 #{% set template_name = 'buddypress_artcode' %}
@@ -123,10 +123,11 @@ TO DO:
 # Taxonomy in WPSS plugin needs to detect categories automatically from the dir /srv/wordpress-selfservice/saltstack/salt/selfservice/sites/templates ??
 # Handlers for what happens in Salt when Admin interface updates or deletes a site. The events are: 'Publish', 'Update' and 'Move to trash'. 
 # 'Publish' is already handled. 'Update' (change template) and 'Move to trash' (which is really setting 'publish' to false, probably means: delete WP instance, including mySQL tables and apache host file). 
+# Admin interface - after clicking 'Publish' on a website, user should see a link to the new site (otherwise, how do they know the address!).
 
 BUGS:
 
-System has suddenly stopped making WP instances!
+# System has suddenly stopped making WP instances!
 
 Symtoms-
 
@@ -148,8 +149,13 @@ Attempt to fix 2:
 As above, but I switched /srv version back to Chris' version
 Still not creating instances... Hmmm...
   
+ # (when instance creation was still working!), over 100 x instances of WP caused a sudden slowdown. After creation, the host file and htmldir didn't appear for up to 15 minutes! 
+ 
+Vagrant/VirtualBox running out of space? 
+This was the used space at >100 instances:
+Disk space: 
+                     size     used    available
+vagrant         368G  347G   22G  95% /vagrant
   
-  
-  
-
+ # Salt not finding Salt config files, on 'vagrant up'. This was caused by Git having failed to install. Therefore, WPSS git file was never installed. Also, this meant that directory didn’t exist to copy Salt config file too. FIXED! SOLUTION: Git was failing because the wrong version of Git was being looked for. Putting ‘apt-get update’ in just before the Git installation (in Vagrant File) fixed this. 
 
