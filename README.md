@@ -21,17 +21,38 @@ Working towards being able to select a template from the user interface and each
 Firstly , in WPSS there are two ways in which WP gets installed:
   
 1. WP Admin (including WPSS plugin) is installed by the state file: 
-/srv/wordpress-selfservice/saltstack/salt/selfservice/master.sls
+/srv/wordpress-selfservice/saltstack/salt/selfservice/master.sls (AKA selfservice.master.sls)
 
-2. WP instances for individuals (including a selection of plugins controlled by state file templates) are installed by the state file: /srv/wordpress-selfservice/saltstack/salt/selfservice/sites/wordpress.sls
- 
+2. WP instances for individuals (including a selection of plugins controlled by state file templates) are installed by the state file: /srv/wordpress-selfservice/saltstack/salt/selfservice/sites/wordpress.sls (AKA selfservice.sites.wordpress.sls)
+
+Salt stuff:
+Master and one minion are on the same machine.
+Both master.conf and minion-local-dev.conf have the same fileroots:
+/srv/wordpress-selfservice/saltstack/salt-local
+/srv/wordpress-selfservice/saltstack/salt
+
+The only difference between the two conf files is that the master.conf has reactor scripts specified to handle 'selfservice/www' salt events.
+
+At runtime Salt looks in the above fileroots for a top.sls, finding it in /srv/wordpress-selfservice/saltstack/salt-local.
+
+The top.sls tells a minion called 'dev' to load the git formulas (loaded by the Vagrant file) for installing apache, mysql and php.
+
+Then top.sls goes to the states:
+selfservice.vhosts.standard.sls (which does some stuff about setting up Apache hosts...needs expanding)
+selfservice.master.sls (which installs the main admin copy of WP in the web root, with the WPSS plugin installed)
+selfservice.sites.wordpress.sls (which does nothing on first time called, because no sites in salt pillar. When all is refreshed, after a new WP instance is created, then this is the bit that installs WP and any required plugins, via the templates).
+
 Clicking 'Publish', 'Update' or 'Move to trash'. on the WP admin installation, websites post type page (should!) update the taxonomy status for the created post. This indicates which template radio-button has been selected (if not selected, then this is set to the 'vanilla' template, with no plugins installed).
 
-The plugin fires off an (empty event) that is interpreted by a Salt Reactor script, causing the wordpress.sls to handle this as required.
+How it should work:
+The plugin fires off an event (‘selfservice/www’) that is interpreted by a Salt Reactor script, eventually causing wordpress.sls to handle this as required.
+If a post has the status 'publish' (and it hasn't already been setup), then a new instance of WP is installed. The post's template name is used to include salt templates, which will in turn copy the appropropriate plugins into the new WP instance (and activate them using WP CLI). 
 
-If a post has the status publish (and it hasn't already been setup), then a new instance of WP is installed. The post's template name is used to include salt templates, which will in turn copy the appropropriate plugins into the new WP instance (and activate them using WP CLI). 
+The chain of events that happen when 'publish' is clicked:
+selfservice.php (wpss_on_save_post() > selfservice.php (wpss_send_event( ) ) > fires event salt-call event.send ‘the event name is ‘selfservice/www’ with a payload of site ‘instance’ and site ‘status'. Note: payload is NOT urrently used > because master.conf includes a ‘reactor’ section specifying how  Salt should respond to 'selfservice/www' events, it triggers the running of 2 scripts > script (1): refresh_pillar.sls (causes pillar data to refresh and master.conf to reload) > wpss_get_pillar.php > wpssmanager.php (get_pillar() - which uses WPQuery to get  'wpss_site' posts and add them to the pillar data). THEN...script (2) selfservice-update.sls (which includes the Salt states selfservice.vhosts.standard and selfservice.sites.wordpress - the latter installs the new instance of WP- it goes through all ‘sites’ in the pillar data, but only adds an instance if not already present.
+
  
-In wordpress.sls it will looks a bit like this:
+In wordpress.sls, the template selection bit looks a something like this:
 
 {% for htmldir,site in salt['pillar.get']('selfservice:sites', {}).items() %}
 {% if site.get('type','') == 'wordpress' %}
@@ -50,6 +71,7 @@ Or for testing purposes, before passing template name via pillar is working:
 #{% set template_name = 'buddypress' %}
 #{% set template_name = 'buddypress_artcode' %}
 
+Then, a template file is included:
 
 template-include-{{ instance }}:
 include:
@@ -64,12 +86,6 @@ buddypress_artcode.sls (artcode and buddypress plugin)
 etc...
 
 Plugins are in: /srv/wordpress-selfservice/plugins
-
-How can I carry over the {{ htmldir }} variable and the requirement for cmd: selfservice-install (from wordpress.sls) into the template states?
-
-Something like this (or not necessary because {{ htmldir }} is not defined in wordpress.sls, global?
-  - defaults:
-        htmldir: {{ htmldir }}
 
 In template file:		
 	
@@ -120,9 +136,8 @@ In template file:
 
 
 TO DO:
-# Taxonomy in WPSS plugin needs to detect categories automatically from the dir /srv/wordpress-selfservice/saltstack/salt/selfservice/sites/templates ??
-# Handlers for what happens in Salt when Admin interface updates or deletes a site. The events are: 'Publish', 'Update' and 'Move to trash'. 
-# 'Publish' is already handled. 'Update' (change template) and 'Move to trash' (which is really setting 'publish' to false, probably means: delete WP instance, including mySQL tables and apache host file). 
+# Taxonomy in WPSS plugin needs to detect 'terms' (template names) automatically from the dir /srv/wordpress-selfservice/saltstack/salt/selfservice/sites/templates ?? UPDATE: this is difficult security wise, because don't want the plugin files to access the file system outside the web root... hmmm...
+# Handlers for what happens in Salt when Admin interface updates or deletes a site. The events are: 'Publish' (, 'Update' and 'Move to trash'. 'Publish' is already handled. 'Update' (change template) and 'Move to trash' (which is on the Salt pillar as status=deleted, means: delete WP instance, including mySQL tables and apache host file). 
 # Admin interface - after clicking 'Publish' on a website, user should see a link to the new site (otherwise, how do they know the address!).
 
 BUGS:
@@ -159,3 +174,8 @@ vagrant         368G  347G   22G  95% /vagrant
   
  # Salt not finding Salt config files, on 'vagrant up'. This was caused by Git having failed to install. Therefore, WPSS git file was never installed. Also, this meant that directory didn’t exist to copy Salt config file too. FIXED! SOLUTION: Git was failing because the wrong version of Git was being looked for. Putting ‘apt-get update’ in just before the Git installation (in Vagrant File) fixed this. 
 
+# When a post of custom type 'wpss_site' is put in the trash, it's name is still reserved. So, if a site called 'bob' is trashed and then a new site called 'bob' is created, the address for the new WP instance is: http://127.0.0.1:8080/bob-2/, rather than http://127.0.0.1:8080/bob/
+I guess this would be fixed by "after clicking 'Publish' on a website, user should see a link to the new site" in TO DO above.
+ 
+ 
+ 

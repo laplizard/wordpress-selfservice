@@ -26,8 +26,8 @@ selfservice-cache-wp{{ wpversion }}:
 {% set description = site.get('description', 'Undescribed WPSS site' ) %}
 {% set url = site.get('url', '') %}
 
-# Steve: next line would be to get template name... for choosing which state template to include - below.
-#{% set template_name = site.get('template','') %}
+# Steve: next line is template name from WP taxonomy 'website_templates'... for choosing which state template to include - below.
+{% set template_name = site.get('template','') %}
 
 # interface could be docker0, except doesn't exist if docker not yet installed!
 {% set dbinterface = 'eth0' %}
@@ -64,7 +64,7 @@ selfservice-dir-{{ instance }}:
 # **************** Steve start
 
 # Or for for testing purposes, before passing template via pillar is working:
-{% set template_name = 'artcode' %}
+#{% set template_name = 'artcode' %}
 #{% set template_name = 'buddypress' %}
 #{% set template_name = 'buddypress_artcode' %}
 

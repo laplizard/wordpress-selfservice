@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) or die( 'This is a plugin' );
 require_once plugin_dir_path( __FILE__ ) . '/includes/taxonomy-single-term/class.taxonomy-single-term.php';
 
 // Steve add: add template names here
-$template_names = array("googleAnalytics", "project_1_setup", "project_2_setup", "project_3_setup");
+$template_names = array("artcode", "buddypress", "buddypress_artcode");
 
 add_action( 'init', 'wpss_create_post_types' );
 /**
@@ -167,7 +167,17 @@ if ($term == 0 || $term == null) {
 wp_insert_term('vanilla',  'website_templates');
 }
 
-// Steve: next is where we need to change it to get template names from Salt files in templates dir
+/*
+
+// Taken this out, because obviously not a secure idea to be looking in a dir outside the web path
+// Seems a pity to have to replicate the templates somewhwere in the web path...
+
+// Steve: if can get template names from template dir, use them...otherwise stick with hardcoded in $template_names array
+if (get_templates()) {
+$template_names = get_templates();
+}
+
+*/
 
  foreach($template_names as $template_name){
  
@@ -190,6 +200,30 @@ wp_insert_term( $template_name,  'website_templates');
  }
  
 add_action( 'init', 'add__website_templates_taxonomy', 0 );
+
+
+
+$pathToTemplates = '/srv/wordpress-selfservice/saltstack/salt/selfservice/sites/templates';
+$fileExtensionForTemplates = '*.sls';
+
+function get_templates() {
+
+$names = array();
+
+// get all filenames in templates dir
+
+foreach(glob($pathToTemplates.$fileExtensionForTemplates) as $filename){
+
+// strip file extension from discovered template filename
+$path_parts = pathinfo($filename);
+ 
+array_push($names, $path_parts['filename']);
+
+ }	// close for each file in templates dir
+  
+ return $names;
+ 
+ }
 
 
 function debug_halt ($data)
